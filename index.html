@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>test</title>
+
+	<script src="babylon.max.js"></script>
+	<script src="ammo.js"></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+
+
+		
+var createScene = function () {
+	var scene = new BABYLON.Scene(engine);
+
+	var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2.5, 50, BABYLON.Vector3.Zero(), scene);
+
+	camera.attachControl(canvas, true);
+
+	var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+	
+	var cover = new BABYLON.StandardMaterial("cover", scene);
+	cover.diffuseTexture = new BABYLON.Texture("colors.png");
+	
+	var options = {
+					width: 2,
+					height: 2,
+					depth: 10,
+					lineDensity: 4,
+					updatable: true
+				};
+
+	//Creation of a box
+	//(name of the box, size, scene)
+	var box = BABYLON.MeshBuilder.CreateBox("box", options, scene);
+	box.position.y = 10;
+	//box.rotation.y = Math.PI/4;
+    box.material = cover;
+    //box.material.wireframe = true;
+    box.forceSharedVertices();
+    box.increaseVertices(2);
+	
+	/*for(var b = 0; b < 12; b++) {
+		var boxM = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
+		boxM.position.x = -5 + b/6;
+		boxM.position.y = 0.5 + b;
+	} */
+
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
+    //scene.getPhysicsEngine().getPhysicsPlugin().setTimeStep(100);
+
+    box.physicsImpostor =  new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0, pressure: 360, velocityIterations:40, positionIterations:40 }, scene);
+	
+	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0 }, scene);
+
+
+
+	return scene;
+};
+
+
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+  scene.render();
+
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+</body>
+</html>

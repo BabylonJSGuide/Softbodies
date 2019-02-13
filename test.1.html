@@ -3,11 +3,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>test 10</title>
+    <title>test 1</title>
 
-	<script src="../babylon.1.max.js"></script>
-	<script src="../ammobjs.js"></script>
-	<script src="../AmmoExtension.js"></script>
+	<script src="babylon.max.js"></script>
+	<script src="ammo.js"></script>
 	
     <style>
         html, body {
@@ -73,8 +72,12 @@ var createScene = function () {
     scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
     //scene.getPhysicsEngine().getPhysicsPlugin().setTimeStep(100);
 
-    box.physicsImpostor =  new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0, pressure: 360, velocityIterations:40, positionIterations:40 }, scene);
-	
+    box.physicsImpostor =  new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0}, scene);
+    box.physicsImpostor.pressure =  60;
+    box.physicsImpostor.velocityIterations = 10; 
+    box.physicsImpostor.positionIterations = 10;
+    box.physicsImpostor.stiffness = 0.01; 
+    
 	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
     ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0 }, scene);
 
