@@ -48,29 +48,17 @@ var createScene = function () {
 	var options = {
 					width: 2,
 					height: 2,
-					depth: 10,
-					lineDensity: 4,
-					updatable: true
+					depth: 10
 				};
 
-	//Creation of a box
-	//(name of the box, size, scene)
 	var box = BABYLON.MeshBuilder.CreateBox("box", options, scene);
 	box.position.y = 10;
-	//box.rotation.y = Math.PI/4;
     box.material = cover;
-    //box.material.wireframe = true;
     box.forceSharedVertices();
     box.increaseVertices(2);
 	
-	/*for(var b = 0; b < 12; b++) {
-		var boxM = BABYLON.MeshBuilder.CreateBox("box", {}, scene);
-		boxM.position.x = -5 + b/6;
-		boxM.position.y = 0.5 + b;
-	} */
 
     scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
-    //scene.getPhysicsEngine().getPhysicsPlugin().setTimeStep(100);
 
     box.physicsImpostor =  new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0}, scene);
     box.physicsImpostor.pressure =  60;

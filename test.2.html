@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>test</title>
+    <title>test 2</title>
 
 	<script src="babylon.max.js"></script>
 	<script src="ammo.js"></script>
@@ -45,22 +45,18 @@ var createScene = function () {
 	var cover = new BABYLON.StandardMaterial("cover", scene);
 	cover.diffuseTexture = new BABYLON.Texture("colors.png");
 	
-	var options = {
-					width: 2,
-					height: 2,
-					depth: 10
-				};
-
-	var box = BABYLON.MeshBuilder.CreateBox("box", options, scene);
-	box.position.y = 10;
-    box.material = cover;
-    box.forceSharedVertices();
-    box.increaseVertices(2);
+    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 3, segments: 16 }, scene);
+	sphere.position.y = 8;
+    sphere.material = cover;
 
     scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
 
-    box.physicsImpostor =  new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0, pressure: 360, velocityIterations:40, positionIterations:40 }, scene);
-	
+    sphere.physicsImpostor =  new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0}, scene);
+    sphere.physicsImpostor.pressure =  40000;
+    sphere.physicsImpostor.velocityIterations = 20; 
+    sphere.physicsImpostor.positionIterations = 20;
+    sphere.physicsImpostor.stiffness = 1; 
+    
 	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
     ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0 }, scene);
 
