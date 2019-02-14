@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>test 4</title>
+
+	<script src="babylon.max.js"></script>
+	<script src="ammo.js"></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+
+
+		
+var createScene = function () {
+	var scene = new BABYLON.Scene(engine);
+
+	var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2.5, 50, BABYLON.Vector3.Zero(), scene);
+
+	camera.attachControl(canvas, true);
+
+	var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+	
+	var cover = new BABYLON.StandardMaterial("cover", scene);
+	cover.diffuseTexture = new BABYLON.Texture("colors.png");
+	
+    var sphere = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 3, segments: 16 }, scene);
+	sphere.position.y = 8;
+    sphere.material = cover;
+    sphere.convertToFlatShadedMesh();
+
+
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
+
+    sphere.physicsImpostor =  new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0}, scene);
+    sphere.physicsImpostor.pressure =  40000;
+    sphere.physicsImpostor.velocityIterations = 20; 
+    sphere.physicsImpostor.positionIterations = 20;
+    sphere.physicsImpostor.stiffness = 1; 
+    
+	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0 }, scene);
+
+
+
+	return scene;
+};
+
+
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+  scene.render();
+
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+</body>
+</html>
