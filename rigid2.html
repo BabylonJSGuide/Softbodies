@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>rigid 2</title>
+
+	<script src="babylon.max.js"></script>
+    <script src="ammo.js"></script>
+    <script src="https://preview.babylonjs.com/serializers/babylonjs.glTF2Serializer.min.js"></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+
+
+		
+    var createScene = function () {
+    // Setup scene
+    var scene = new BABYLON.Scene(engine);
+    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+    camera.setTarget(BABYLON.Vector3.Zero());
+    camera.attachControl(canvas, true);
+    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 0.7;
+    
+    // Enable physics
+    scene.enablePhysics(new BABYLON.Vector3(0,-10,0), new BABYLON.AmmoJSPlugin(true));
+
+    // Create ground collider
+    var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0.7 }, scene);
+
+    // Import mesh and set colliders
+    BABYLON.SceneLoader.ImportMesh("", "", "skull.babylon", scene, function (newMeshes) {
+        // Scale loaded mesh
+        newMeshes[0].scaling.scaleInPlace(0.01);
+        newMeshes[0].position.set(0,0,0)
+        
+        // Add colliders
+        var collidersVisible = false;
+        var sphereCollider = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.5, scene);
+        sphereCollider.position.y = 0.08;
+        sphereCollider.isVisible = collidersVisible;
+        var boxCollider = BABYLON.Mesh.CreateBox("box1", 0.3, scene);
+        boxCollider.position.y = -0.13;
+        boxCollider.position.z = -0.13;
+        boxCollider.isVisible = collidersVisible;
+
+        // Create a physics root and add all children
+        var physicsRoot = new BABYLON.Mesh("", scene);
+        physicsRoot.addChild(newMeshes[0]);
+        physicsRoot.addChild(boxCollider);
+        physicsRoot.addChild(sphereCollider);
+        physicsRoot.position.y+=3;
+
+        // Enable physics on colliders first then physics root of the mesh
+        boxCollider.physicsImpostor = new BABYLON.PhysicsImpostor(boxCollider, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0 }, scene);
+        sphereCollider.physicsImpostor = new BABYLON.PhysicsImpostor(sphereCollider, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 0 }, scene);
+        physicsRoot.physicsImpostor = new BABYLON.PhysicsImpostor(physicsRoot, BABYLON.PhysicsImpostor.NoImpostor, { mass: 3 }, scene);
+
+        // Orient the physics root
+        physicsRoot.rotation.x = Math.PI/5;
+        physicsRoot.rotation.z = Math.PI/6;
+    });
+
+    return scene;
+
+};
+
+
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+  scene.render();
+
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+</body>
+</html>
