@@ -58,7 +58,7 @@ var createScene = function () {
     box.increaseVertices(2);
 	
 
-    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
 
     box.physicsImpostor =  new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0}, scene);
     box.physicsImpostor.pressure =  60;

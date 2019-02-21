@@ -61,7 +61,7 @@ var createScene = function () {
     var shadowGenerator = new BABYLON.ShadowGenerator(2048, light);
 
     // Physics
-    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
 
     // Spheres
     var y = 0;

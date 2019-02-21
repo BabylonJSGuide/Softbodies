@@ -49,7 +49,7 @@ var createScene = function () {
 	sphere.position.y = 8;
     sphere.material = cover;
 
-    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin(true));
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
 
     sphere.physicsImpostor =  new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.1, restitution: 0}, scene);
     sphere.physicsImpostor.pressure =  40000;

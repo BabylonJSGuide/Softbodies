@@ -44,7 +44,7 @@ if (BABYLON.Engine.isSupported()) {
     light.intensity = 0.7;
     
     // Enable physics
-    scene.enablePhysics(new BABYLON.Vector3(0,-10,0), new BABYLON.AmmoJSPlugin(true));
+    scene.enablePhysics(new BABYLON.Vector3(0,-10,0), new BABYLON.AmmoJSPlugin());
 
     // Create ground collider
     var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
