@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>wall</title>
+
+	<script src="babylon.max.js"></script>
+	<script src="ammo.js"></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+
+
+		
+var createScene = function () {
+	var scene = new BABYLON.Scene(engine);
+
+	var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2.5, 100, BABYLON.Vector3.Zero(), scene);
+
+	camera.attachControl(canvas, true);
+
+	var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1, 1, 0), scene);
+	
+	var cover = new BABYLON.StandardMaterial("cover", scene);
+    cover.diffuseTexture = new BABYLON.Texture("colors.png");
+    cover.backFaceCulling = false;
+    //cover.wireframe = true;
+
+    var wood= new BABYLON.StandardMaterial("wood", scene);
+    wood.diffuseTexture = new BABYLON.Texture("crate.png");
+	
+    scene.enablePhysics(new BABYLON.Vector3(0, -1, 0), new BABYLON.AmmoJSPlugin(true));
+    
+	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0, restitution: 0}, scene);
+
+   
+    // Wall
+	var brickMass = 0.5;
+	var brickLength = 6;
+	var brickDepth = 3;
+	var brickHeight = brickLength * 0.5;
+	var numBricksLength = 6;
+	var numBricksHeight = 8;
+    var x0 = -numBricksLength * brickLength * 0.5;
+    var y = brickHeight * 0.5;
+    var x = 0;
+	var pos = new BABYLON.Vector3(x0, brickHeight * 0.5, 0);
+	for ( var j = 0; j < numBricksHeight; j++ ) {
+		var oddRow = ( j % 2 ) == 1;
+        x = x0;
+        var nRow = numBricksLength
+		if (oddRow) {
+            x -= 0.25 * brickLength;
+            nRow += 1;
+		}
+		for ( var i = 0; i < nRow; i++ ) {
+			var brickLengthCurrent = brickLength;
+			var brickMassCurrent = brickMass;
+			if (oddRow && ( i == 0 || i == nRow - 1 )) {
+				brickLengthCurrent *= 0.5;
+				brickMassCurrent *= 0.5;
+            }
+            
+            var brick = BABYLON.MeshBuilder.CreateBox("", {width: brickLengthCurrent, height: brickHeight, depth: brickDepth}, scene)
+            brick.forceSharedVertices();
+            brick.increaseVertices(5);
+            brick.position = new BABYLON.Vector3(x, y, 0);
+            brick.material = new BABYLON.StandardMaterial("", scene);
+            brick.material.diffuseColor = new BABYLON.Color3(Math.random(),Math.random(), Math.random());
+            brick.physicsImpostor = new BABYLON.PhysicsImpostor(brick, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: brickMass, friction: 0.5}, scene);
+            brick.physicsImpostor.pressure =  60000;
+            brick.physicsImpostor.velocityIterations = 40; 
+            brick.physicsImpostor.positionIterations = 40;
+            brick.physicsImpostor.stiffness = 1;
+
+			if ( oddRow && ( i == 0 || i == nRow - 2 ) ) {
+				x += 0.75 * brickLength;
+			}
+			else {
+				x += brickLength;
+			}
+
+		}
+        y += brickHeight;
+        
+    } 
+
+	return scene;
+};
+
+
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+  scene.render();
+
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+    <div>Anchor Test NOT WORKING</div>
+</body>
+</html>

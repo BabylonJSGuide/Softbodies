@@ -5,7 +5,7 @@
 
     <title>anchor</title>
 
-	<script src="babylon.maxtest.js"></script>
+	<script src="babylon.max.js"></script>
 	<script src="ammo.js"></script>
 	
     <style>
@@ -104,7 +104,7 @@ var createScene = function () {
     
     // add the main body and joint to the connected axle 
     upright.physicsImpostor.addJoint(arm.physicsImpostor, joint); 
-    //joint.setMotor(1, 1000);
+    joint.setMotor(1, 1000);
 
     // Wall
 	var brickMass = 0.5;
@@ -137,7 +137,7 @@ var createScene = function () {
             brick.position = new BABYLON.Vector3(x, y, 0);
             brick.material = new BABYLON.StandardMaterial("", scene);
             brick.material.diffuseColor = new BABYLON.Color3(Math.random(),Math.random(), Math.random());
-            brick.physicsImposter = new BABYLON.PhysicsImpostor(brick, BABYLON.PhysicsImpostor.BoxImpostor, { mass: brickMass, friction: 0.5}, scene);
+            brick.physicsImpostor = new BABYLON.PhysicsImpostor(brick, BABYLON.PhysicsImpostor.BoxImpostor, { mass: brickMass, friction: 0.5}, scene);
 
 			if ( oddRow && ( i == 0 || i == nRow - 2 ) ) {
 				x += 0.75 * brickLength;
