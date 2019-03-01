@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>cloth test 1</title>
+
+	<script src="babylon.newmax.js"></script>
+	<script src="ammo.js"></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+
+    function showNormals(mesh, size, color, sc) {
+    var normals = mesh.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+    var positions = mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    color = color || BABYLON.Color3.White();
+    sc = sc || scene;
+    size = size || 1;
+
+    var lines = [];
+    for (var i = 0; i < normals.length; i += 3) {
+        var v1 = BABYLON.Vector3.FromArray(positions, i);       
+        var v2 = v1.add(BABYLON.Vector3.FromArray(normals, i).scaleInPlace(size));
+        lines.push([v1.add(mesh.position), v2.add(mesh.position)]);
+    }
+    var normalLines = BABYLON.MeshBuilder.CreateLineSystem("normalLines", {lines: lines}, sc);
+    normalLines.color = color;
+    return normalLines;
+}
+		
+var createScene = function () {
+	var scene = new BABYLON.Scene(engine);
+
+	var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2.5, 50, BABYLON.Vector3.Zero(), scene);
+
+	camera.attachControl(canvas, true);
+
+	var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1, -1, 0), scene);
+	
+	var cover = new BABYLON.StandardMaterial("cover", scene);
+    cover.diffuseTexture = new BABYLON.Texture("colors.png");
+    
+    var crate = new BABYLON.StandardMaterial("crate", scene);
+    crate.diffuseTexture = new BABYLON.Texture("crate.png");
+
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
+    
+	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0 }, scene);
+
+
+    var boxVertices = BABYLON.MeshBuilder.CreateBox("boxVertices", {width: 5, depth: 8, height:4}, scene);
+    boxVertices.position.y = 2.5;
+    boxVertices.position.x = -5;
+    boxVertices.material = cover;
+    boxVertices.forceSharedVertices();
+    boxVertices.increaseVertices(10);
+    showNormals(boxVertices, 1, BABYLON.Color3.Red(), scene);
+    boxVertices.physicsImpostor = new BABYLON.PhysicsImpostor(boxVertices, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.5, restitution: 0, margin: 0.15 }, scene);
+    boxVertices.physicsImpostor.pressure =  40000;
+    boxVertices.physicsImpostor.velocityIterations = 10; 
+    boxVertices.physicsImpostor.positionIterations = 10;
+    boxVertices.physicsImpostor.stiffness = 1;
+
+    var boxFacets = BABYLON.MeshBuilder.CreateBox("boxFacets", {width: 5, depth: 8, height:4}, scene);
+    boxFacets.position.y = 2.5;
+    boxFacets.position.x = 5;
+    boxFacets.material = cover;
+    boxFacets.forceSharedVertices();
+    boxFacets.increaseFacets(10);
+    showNormals(boxFacets, 1, BABYLON.Color3.Red(), scene);
+    boxFacets.physicsImpostor = new BABYLON.PhysicsImpostor(boxFacets, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.5, restitution: 0, margin: 0.15 }, scene);
+    boxFacets.physicsImpostor.pressure =  40000;
+    boxFacets.physicsImpostor.velocityIterations = 10; 
+    boxFacets.physicsImpostor.positionIterations = 10;
+    boxFacets.physicsImpostor.stiffness = 1;
+
+	return scene;
+};
+
+
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+  scene.render();
+
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+</body>
+</html>

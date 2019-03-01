@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>cloth test 1</title>
+
+	<script src="babylon.newmax.js"></script>
+	<script src="ammo.js"></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+
+
+		
+var createScene = function () {
+	var scene = new BABYLON.Scene(engine);
+
+	var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 2.5, 50, BABYLON.Vector3.Zero(), scene);
+
+	camera.attachControl(canvas, true);
+
+	var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(1, -1, 0), scene);
+	
+	var cover = new BABYLON.StandardMaterial("cover", scene);
+    cover.diffuseTexture = new BABYLON.Texture("colors.png");
+    
+    var crate = new BABYLON.StandardMaterial("crate", scene);
+    crate.diffuseTexture = new BABYLON.Texture("crate.png");
+
+    var pbr = new BABYLON.PBRSpecularGlossinessMaterial("pbr", scene);
+    pbr.diffuseColor = new BABYLON.Color3(1.0, 0.766, 0.336);
+    pbr.specularColor = new BABYLON.Color3(1.0, 0.766, 0.336);
+    pbr.backFaceCulling = false
+    pbr.glossiness = 1.0; // Let the texture controls the value 
+    pbr.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environment.dds", scene);
+    pbr.specularGlossinessTexture = new BABYLON.Texture("sg.png", scene);
+
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
+    
+	var ground = BABYLON.MeshBuilder.CreateBox("ground", {width: 80, depth: 80, height:1}, scene);
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.5, restitution: 0 }, scene);
+
+
+    var box = BABYLON.MeshBuilder.CreateBox("box", {width: 5, depth: 8, height:4}, scene);
+    box.position.y = 2.5;
+    box.material = pbr;
+    box.forceSharedVertices();
+    box.increaseVertices(10);
+    box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.SoftbodyImpostor, { mass: 15, friction: 0.5, restitution: 0, margin: 0.15 }, scene);
+    box.physicsImpostor.pressure =  40000;
+    box.physicsImpostor.velocityIterations = 10; 
+    box.physicsImpostor.positionIterations = 10;
+    box.physicsImpostor.stiffness = 1;
+
+	return scene;
+};
+
+
+var scene = createScene();
+
+engine.runRenderLoop(function () {
+  scene.render();
+
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+</body>
+</html>
