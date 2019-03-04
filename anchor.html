@@ -82,16 +82,6 @@ var createScene = function () {
     cloth.physicsImpostor.positionIterations = 10;
     cloth.physicsImpostor.stiffness = 0.6;
 
-    var nodes = cloth.physicsImpostor.physicsBody.get_m_nodes();
-
-    var node = nodes.at( 0 );
-    var nodePos = node.get_m_x();
-    console.log("nodes", 0, "=", nodePos.x(), nodePos.y(), nodePos.z());
-
-    node = nodes.at( 20 );
-    nodePos = node.get_m_x();
-    console.log("nodes", 20, "=", nodePos.x(), nodePos.y(), nodePos.z());
-
     cloth.physicsImpostor.addAnchor(arm.physicsImpostor, 0, 1, 1);
     cloth.physicsImpostor.addAnchor(arm.physicsImpostor, 1, 1, 1); 
 

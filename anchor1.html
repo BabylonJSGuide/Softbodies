@@ -88,30 +88,11 @@ var createScene = function () {
     cloth.material = pbr;
 
     var positions = cloth.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-    console.log("nb verts", positions.length / 3);
 
     cloth.physicsImpostor =  new BABYLON.PhysicsImpostor(cloth, BABYLON.PhysicsImpostor.ClothImpostor, { mass: 10, friction: 0, restitution: 0, damping: 0.01, margin: 0.15}, scene);
     cloth.physicsImpostor.velocityIterations = 10; 
     cloth.physicsImpostor.positionIterations = 10;
     cloth.physicsImpostor.stiffness = 0.6;
-
-    var nodes = cloth.physicsImpostor.physicsBody.get_m_nodes();
-console.log("length", nodes.size())
-
-    for (var i = 0; i < nodes.size() / sbs; i++) {
-        for(j = 0; j < sbs + 1; j++) {
-            var node = nodes.at( i * sbs + j);
-            var nodePos = node.get_m_x();
-            console.log("nodes", i, j, i * sbs + j, "=", nodePos.x(), nodePos.y(), nodePos.z());
-        }
-        console.log("");
-    }
-    
-    
-
-    node = nodes.at( 21 );
-    nodePos = node.get_m_x();
-    console.log("nodes", 21, "=", nodePos.x(), nodePos.y(), nodePos.z());
 
     cloth.physicsImpostor.addAnchor(arm.physicsImpostor, 0, 0, 1);
     cloth.physicsImpostor.addAnchor(arm.physicsImpostor, 1, 0, 1); 
